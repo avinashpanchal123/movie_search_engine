@@ -45,7 +45,7 @@
 
         }
 
-        #search_btn{
+        #search_btn {
             position: absolute;
             left: 70%;
             top: 5%;
@@ -78,6 +78,27 @@
             color: white;
         }
 
+        #poster_container {
+            width: 90%;
+            height: 80vh;
+            margin: auto;
+            border: 2px solid black;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: 100%;
+        }
+
+        #poster_container img{
+            width: 100%;
+            height: 100%;
+        }
+
+        #poster_container div:nth-child(2){
+            background-color: #0e0d0de7;
+            text-align: center;
+            color: white;
+        }
+
       
     </style>
 
@@ -94,9 +115,9 @@
             <input id="nav_search" type="search" placeholder="Search">
         </div>
         <div>
-            <button onclick="" id="search_btn">Search</button>
+            <button onclick="movieSearch()" id="search_btn">Search</button>
         </div>
-        
+
         <ul class="right_nav">
             <li><a id="home" href="home.html">Home</a></li>
             <li><a href="">Login</a></li>
@@ -104,7 +125,88 @@
         </ul>
     </nav>
 
-   
+    <div id="poster_container">
+
+    </div>
+
+
 </body>
 
 </html>
+
+
+<script>
+
+    let poster_container = document.getElementById("poster_container")
+
+
+
+    async function movieSearch() {
+
+        let search = document.getElementById("nav_search").value;
+
+
+        let res = await fetch(`https://www.omdbapi.com/?apikey=e0ceb34d&t=${search}`)
+
+        let movie = await res.json();
+
+        ShowMovie(movie)
+
+    }
+
+    function ShowMovie(details) {
+
+        poster_container.innerText = null;
+
+        let img_div = document.createElement("div")
+
+        let img = document.createElement("img")
+         
+        img.src = details.Poster
+
+        console.log(details);
+
+        console.log(poster_container);
+
+        let details_div = document.createElement("div");
+
+        let name = document.createElement("h2");
+
+        name.textContent = details.Title;
+
+        let actors  = document.createElement("p");
+
+        let release_date = document.createElement("p");
+
+        release_date.textContent =  " Release date " + ":" +details.DVD;
+
+        actors.textContent = details.Actors;
+
+        let Plot = document.createElement("p");
+
+        Plot.textContent = details.Plot;
+
+        let Ratings = document.createElement("p");
+
+        Ratings.textContent = "ratings"+ ":"+ details.Ratings[0].Value
+
+        details_div.append(name, actors,release_date,Ratings,Plot)
+
+        
+
+        img_div.append(img);
+
+        poster_container.append(img_div,details_div)
+
+       
+
+    }
+
+
+
+
+
+
+
+
+</script>
