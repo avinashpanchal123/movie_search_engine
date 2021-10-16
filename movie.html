@@ -1,14 +1,399 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        /* navbar started */
+
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            position: relative;
+            background-color: #0e0d0d;
+            z-index: 1;
+        }
+
+        nav {
+            width: 100%;
+            height: 10vh;
+            background-color: #0e0d0d;
+            display: flex;
+            position: relative;
+        }
+
+        .left_nav {
+            position: absolute;
+            left: 5%;
+            top: 10%;
+        }
+
+        #nav_search {
+            position: absolute;
+            left: 40%;
+            /* top: 20%; */
+            width: 30%;
+            height: 80%;
+            font-size: 25px;
+            border: none;
+            border-bottom: 2px solid white;
+            background-color: #0e0d0d;
+            color: white;
+            outline: none;
+            letter-spacing: 1px;
+
+        }
+
+
+
+        .right_nav {
+            display: flex;
+            width: 15%;
+            ;
+            justify-content: space-between;
+            position: absolute;
+            right: 2%;
+            top: 30%;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        li>a {
+            text-decoration: none;
+            color: white;
+        }
+
+        /* movieList container started */
+
+        #movies {
+            height: 200px;
+            width: 30%;
+            border: 1px solid black;
+            overflow: scroll;
+            border-top: none;
+            /* margin-left: 40%; */
+            display: none;
+            position: absolute;
+            left: 40%;
+            top: 9vh;
+            z-index: 4;
+            background-color: rgba(255, 255, 255, 0.801);
+
+        }
+
+        /* movie box started */
+
+        .movie_box {
+            width: 90%;
+            margin: auto;
+            /* border: 5px solid palevioletred; */
+            height: 70vh;
+            display: grid;
+            grid-template-columns: repeat(2, 50%);
+            /* justify-content: space-around; */
+            grid-template-rows: 100%;
+            margin-top: 5vh;
+            border-radius: 20px;
+            background-color: #5a56564b;
+            position: relative;
+            z-index: 3;
+
+        }
+
+        #image_div {
+            padding-left: 20%;
+        }
+
+        #image_div img {
+            width: 70%;
+            height: 100%;
+        }
+
+        #details_div {
+            color: white;
+            padding-top: 5vh;
+        }
+
+        p {
+            margin-top: 2vh;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>
-        Welcome to the World of Movie
-    </h1>
+
+
+    <nav>
+        <div class="left_nav">
+            <img src="https://secure-media.hotstarext.com/web-assets/prod/images/brand-logos/disney-hotstar-logo-dark.svg"
+                alt="">
+        </div>
+        <div>
+            <input oninput=" debounce(main,1000)" id="nav_search" type="search" placeholder="Search">
+        </div>
+
+        <ul class="right_nav">
+            <li><a id="home" href="home.html">Home</a></li>
+            <li><a href="">Login</a></li>
+            <li><a id="signup" href="signup.html">Signup</a></li>
+        </ul>
+    </nav>
+
+    <div id="movies"></div>
+
+
+
+    <div class="movie_box">
+        <div id="image_div">
+
+        </div>
+        <div id="details_div">
+
+        </div>
+    </div>
+
 </body>
+
 </html>
+
+<script>
+
+    let movie_details = JSON.parse(localStorage.getItem("movie_details"));
+
+    let image_div = document.getElementById("image_div");
+
+    let details_div = document.getElementById("details_div")
+
+    let recent_movie = movie_details[movie_details.length - 1];
+
+    function uppendMovie_image() {
+
+
+        let img = document.createElement("img");
+
+        img.src = recent_movie.Poster;
+
+        console.log(img);
+
+        image_div.append(img)
+    }
+
+    uppendMovie_image()
+
+    function uppendMovie_info() {
+
+        let name = document.createElement('h2');
+
+        name.textContent = recent_movie.Title;
+
+        let Plot = document.createElement('p');
+
+        Plot.textContent = recent_movie.Plot;
+
+        let Actors = document.createElement('p');
+
+        Actors.textContent = recent_movie.Actors
+
+        let Released = document.createElement("p");
+
+        Released.textContent = "Released" + " " + ":" + " " + recent_movie.Released;
+
+        let Ratings = document.createElement("p");
+
+        let imdbRating = +(recent_movie.imdbRating)
+
+        console.log(imdbRating);
+
+        if (imdbRating > 8.5) {
+            Ratings.textContent = "Ratings" + "  " + ":" + " " + imdbRating + "(Recommended)"
+        }
+        else {
+            Ratings.textContent = "Ratings" + "  " + ":" + " " + imdbRating
+        }
+
+
+
+        details_div.append(name, Plot,Actors, Released, Ratings)
+
+
+    }
+
+    uppendMovie_info();
+
+
+
+
+
+
+
+
+
+
+
+
+    let timerId;
+
+    let search_box = document.getElementById("nav_search");
+
+
+    let body = document.querySelector('body')
+
+    let movies_list_container = document.getElementById("movies");
+
+
+    body.onclick = function () {
+
+        let timer = setTimeout(function () {
+            Gayab()
+        }, 1000)
+    }
+
+    function Gayab() {
+        movies_list_container.style.display = "none";
+
+        search_box.value = ""
+    }
+
+
+
+    async function movieSearch(search) {
+
+
+        try {
+            let res = await fetch(`https://www.omdbapi.com/?apikey=e0ceb34d&s=${search}`);
+
+
+            let movies = await res.json();
+
+            return movies
+        }
+
+        catch (err) {
+            // poster_container.innerHTML = null;
+
+            // console.log('avinash');
+
+            // let massage = document.createElement('h1');
+
+            // massage.textContent = "Movie not found";
+
+            // poster_container.style.display = "block"
+
+            // poster_container.style.textAlign ="center"
+
+
+            // poster_container.append(massage)
+
+            // function movie(){
+            //     window.location.href = "movie.html" 
+            // }
+            // movie();
+
+            // console.log(err);
+
+        }
+
+    }
+
+
+    function ShowMovie_list(movies_list) {
+
+        movies_list_container.innerHTML = null;
+
+        movies_list.forEach((movie) => {
+
+            let movie_name = document.createElement('p');
+
+
+            movie_name.textContent = movie.Title;
+
+            movie_name.style.cursor = "pointer"
+
+            movies_list_container.append(movie_name);
+
+            movie_name.onclick = function () {
+                Go_toMoviePage(movie.imdbID)
+            }
+
+
+        });
+
+    }
+
+
+    async function Go_toMoviePage(text) {
+        let movie_details = text;
+
+        let res = await fetch(`https://www.omdbapi.com/?apikey=e0ceb34d&i=${movie_details}`);
+
+        let data = await res.json();
+
+        if (localStorage.getItem("movie_details") == null) {
+            localStorage.setItem("movie_details", JSON.stringify([]))
+        }
+
+
+        let view_movie_arr = (JSON.parse(localStorage.getItem("movie_details")));
+
+        view_movie_arr.push(data);
+
+        localStorage.setItem("movie_details", JSON.stringify(view_movie_arr))
+
+        window.location.href = "movie.html"
+
+
+    }
+
+
+
+
+    async function main() {
+
+        let search = search_box.value;
+
+        if (search.length < 4) {
+            return false
+        }
+
+        movies_list_container.style.display = "block";
+
+        movies_list_container.innerHTML = null;
+
+        let res = await movieSearch(search);
+
+        let movies_list = res.Search;
+
+        ShowMovie_list(movies_list)
+
+    }
+
+
+    function debounce(func, delay) {
+
+        clearTimeout(timerId)
+
+        timerId = setTimeout(function () {
+            func()
+
+        }, delay)
+
+
+    }
+
+
+
+
+
+
+
+
+</script>
