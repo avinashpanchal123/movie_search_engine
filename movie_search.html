@@ -78,28 +78,34 @@
             color: white;
         }
 
-        #poster_container {
-            width: 90%;
-            height: 80vh;
-            margin: auto;
-            border: 2px solid black;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: 100%;
-        }
 
-        #poster_container img{
+
+        #slider {
             width: 100%;
-            height: 100%;
+            height: 400px;
+            background-color: blue;
+            position: relative;
+            /* z-index: 2; */
+
         }
 
-        #poster_container div:nth-child(2){
-            background-color: #0e0d0de7;
-            text-align: center;
-            color: white;
-        }
 
-      
+
+        #movies {
+            height: 200px;
+            width: 30%;
+            border: 1px solid black;
+            overflow: scroll;
+            border-top: none;
+            /* margin-left: 40%; */
+            display: none;
+            position: absolute;
+            left: 40%;
+            top: -1.5vh;
+            /* z-index: 4; */
+            background-color: white;
+
+        }
     </style>
 
 
@@ -112,10 +118,10 @@
                 alt="">
         </div>
         <div>
-            <input id="nav_search" type="search" placeholder="Search">
+            <input oninput=" debounce(main,1000)" id="nav_search" type="search" placeholder="Search">
         </div>
         <div>
-            <button onclick="movieSearch()" id="search_btn">Search</button>
+            <button id="search_btn">Search</button>
         </div>
 
         <ul class="right_nav">
@@ -125,8 +131,10 @@
         </ul>
     </nav>
 
-    <div id="poster_container">
 
+
+    <div id="slider">
+        <div id="movies"></div>
     </div>
 
 
@@ -136,71 +144,158 @@
 
 
 <script>
+     let timerId;
 
-    let poster_container = document.getElementById("poster_container")
-
-
-
-    async function movieSearch() {
-
-        let search = document.getElementById("nav_search").value;
+    let search_box = document.getElementById("nav_search");
 
 
-        let res = await fetch(`https://www.omdbapi.com/?apikey=e0ceb34d&t=${search}`)
+    let body = document.querySelector('body')
 
-        let movie = await res.json();
+    let movies_list_container = document.getElementById("movies");
 
-        ShowMovie(movie)
+
+    body.onclick = function () {
+
+        let timer = setTimeout(function () {
+            Gayab()
+        }, 1000)
+    }
+
+    function Gayab() {
+        movies_list_container.style.display = "none";
+
+        search_box.value = ""
+    }
+
+
+
+    async function movieSearch(search) {
+
+
+        try {
+            let res = await fetch(`https://www.omdbapi.com/?apikey=e0ceb34d&s=${search}`);
+
+
+            let movies = await res.json();
+
+            return movies
+        }
+
+        catch (err) {
+            // poster_container.innerHTML = null;
+
+            // console.log('avinash');
+
+            // let massage = document.createElement('h1');
+
+            // massage.textContent = "Movie not found";
+
+            // poster_container.style.display = "block"
+
+            // poster_container.style.textAlign ="center"
+
+
+            // poster_container.append(massage)
+
+            // function movie(){
+            //     window.location.href = "movie.html" 
+            // }
+            // movie();
+
+            // console.log(err);
+
+        }
 
     }
 
-    function ShowMovie(details) {
 
-        poster_container.innerText = null;
+    function ShowMovie_list(movies_list) {
 
-        let img_div = document.createElement("div")
+        movies_list_container.innerHTML = null;
 
-        let img = document.createElement("img")
-         
-        img.src = details.Poster
+        movies_list.forEach((movie) => {
 
-        console.log(details);
+            let movie_name = document.createElement('p');
 
-        console.log(poster_container);
 
-        let details_div = document.createElement("div");
+            movie_name.textContent = movie.Title;
 
-        let name = document.createElement("h2");
+            movie_name.style.cursor = "pointer"
 
-        name.textContent = details.Title;
+            movies_list_container.append(movie_name);
 
-        let actors  = document.createElement("p");
+            movie_name.onclick = function () {
+                Go_toMoviePage(movie.imdbID)
+            }
 
-        let release_date = document.createElement("p");
 
-        release_date.textContent =  " Release date " + ":" +details.DVD;
+        });
 
-        actors.textContent = details.Actors;
+    }
 
-        let Plot = document.createElement("p");
 
-        Plot.textContent = details.Plot;
+    async  function Go_toMoviePage(text) {
+        let movie_details = text;
+      
+        let res = await fetch(`https://www.omdbapi.com/?apikey=e0ceb34d&i=${movie_details}`);
 
-        let Ratings = document.createElement("p");
+        let data = await res.json();
 
-        Ratings.textContent = "ratings"+ ":"+ details.Ratings[0].Value
+        if( localStorage.getItem("movie_details") == null){
+            localStorage.setItem("movie_details",JSON.stringify([]))
+        }
 
-        details_div.append(name, actors,release_date,Ratings,Plot)
 
-        
+        let view_movie_arr = (JSON.parse(localStorage.getItem("movie_details")));
 
-        img_div.append(img);
+        view_movie_arr.push(data);
 
-        poster_container.append(img_div,details_div)
+        localStorage.setItem("movie_details", JSON.stringify(view_movie_arr))
 
+        window.location.href = "movie.html"
        
 
     }
+
+
+
+
+    async function main() {
+
+        let search = search_box.value;
+
+        if (search.length < 4) {
+            return false
+        }
+
+        movies_list_container.style.display = "block";
+
+        movies_list_container.innerHTML = null;
+
+        let res = await movieSearch(search);
+
+        let movies_list = res.Search;
+
+        ShowMovie_list(movies_list)
+
+    }
+
+
+    function debounce(func, delay) {
+
+        clearTimeout(timerId)
+
+        timerId = setTimeout(function () {
+            func()
+
+        }, delay)
+
+
+    }
+
+
+
+
 
 
 
