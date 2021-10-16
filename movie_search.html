@@ -117,13 +117,37 @@
 
         }
 
-        #slider_container img{
+        #slider_container img {
             position: absolute;
             z-index: 3;
             width: 100%;
             height: 100%;
             border-radius: 20px;
 
+        }
+
+        .white_text{
+            color: white;
+        }
+
+        h1{
+            margin: 3vh 0px;
+        }
+
+        /* popular movies started */
+
+        #Popular_movies {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(10, 9%);
+            grid-template-rows: repeat(2, 40vh);
+            gap: 1%;
+
+        }
+
+        #Popular_movies div>img {
+            width: 100%;
+            border-radius: 10px;
         }
     </style>
 
@@ -156,7 +180,14 @@
     <div id="movies"></div>
 
     <div id="slider_container">
-       <img src="https://m.media-amazon.com/images/M/MV5BMTUyMTA4NDYzMV5BMl5BanBnXkFtZTcwMjk5MzcxMw@@._V1_SX300.jpg" alt="">
+        <img src="https://m.media-amazon.com/images/M/MV5BMTUyMTA4NDYzMV5BMl5BanBnXkFtZTcwMjk5MzcxMw@@._V1_SX300.jpg"
+            alt="">
+    </div>
+
+      <h1 class="white_text">Popular & Trending</h1>
+
+    <div id="Popular_movies">
+
     </div>
 
 
@@ -286,7 +317,7 @@
             ShowMovie_list(movies_list)
         }
 
-        catch(err){
+        catch (err) {
 
             let img = document.createElement("img");
 
@@ -314,6 +345,56 @@
 
 
 
+
+// popular movies uppending
+
+
+
+let Popular_movies = document.getElementById("Popular_movies");
+
+
+
+async function PopularMovies(){
+
+    let res = await fetch("https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=d8d01a05f86a4da428034a687a0beea4")
+
+    let data = await res.json();
+
+
+    uppendMovies(data.results)
+
+
+}
+
+PopularMovies()
+
+
+function uppendMovies(movies_list){
+
+    movies_list.forEach((movie) => {
+
+        console.log(movie);
+
+        let {title,poster_path,overview,release_date} = movie;
+
+        let img_div = document.createElement("div");
+
+
+
+        let img = document.createElement("img");
+
+      
+
+        img.src = "https://image.tmdb.org/t/p/w500"+ poster_path;
+
+        img_div.append(img)
+
+        Popular_movies.append(img_div)
+        
+    });
+
+
+}
 
 
 
