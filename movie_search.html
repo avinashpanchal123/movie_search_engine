@@ -7,6 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
+        body {
+            position: relative;
+            background-color: #0e0d0d;
+        }
+
         /* navbar started */
 
         * {
@@ -45,12 +50,12 @@
 
         }
 
-        #search_btn {
+        #Subscribe_btn {
             position: absolute;
             left: 70%;
-            top: 5%;
-            padding: 0.6% 3%;
-            font-size: 25px;
+            top: 8%;
+            padding: 0.4% 1.5%;
+            font-size: 22px;
             cursor: pointer;
             /* border-bottom: 2px solid white; */
             background-color: #0e0d0d;
@@ -80,19 +85,10 @@
 
 
 
-        #slider {
-            width: 100%;
-            height: 400px;
-            background-color: blue;
-            position: relative;
-            /* z-index: 2; */
-
-        }
-
-
+        /* movies list container started */
 
         #movies {
-            height: 200px;
+            height: 30vh;
             width: 30%;
             border: 1px solid black;
             overflow: scroll;
@@ -101,9 +97,32 @@
             display: none;
             position: absolute;
             left: 40%;
-            top: -1.5vh;
-            /* z-index: 4; */
+            top: 9vh;
+            z-index: 4;
             background-color: white;
+
+        }
+
+        /* movie slide container started */
+
+        #slider_container {
+            width: 80%;
+            margin: auto;
+            height: 80vh;
+            margin-top: 5vh;
+            border-radius: 20px;
+            background-color: #5a56564b;
+            position: relative;
+            z-index: 2;
+
+        }
+
+        #slider_container img{
+            position: absolute;
+            z-index: 3;
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
 
         }
     </style>
@@ -121,7 +140,7 @@
             <input oninput=" debounce(main,1000)" id="nav_search" type="search" placeholder="Search">
         </div>
         <div>
-            <button id="search_btn">Search</button>
+            <button id="Subscribe_btn">Subscribe</button>
         </div>
 
         <ul class="right_nav">
@@ -133,11 +152,14 @@
 
 
 
-    <div id="slider">
-        <div id="movies"></div>
-        <div class="slide">
-        </div>
+    <!-- this is the movies_list container -->
+    <div id="movies"></div>
+
+    <div id="slider_container">
+       <img src="https://m.media-amazon.com/images/M/MV5BMTUyMTA4NDYzMV5BMl5BanBnXkFtZTcwMjk5MzcxMw@@._V1_SX300.jpg" alt="">
     </div>
+
+
 
 
 </body>
@@ -146,9 +168,11 @@
 
 
 <script>
-     let timerId;
+    let timerId;
 
     let search_box = document.getElementById("nav_search");
+
+    let slider_container = document.getElementById("slider_container");
 
 
     let body = document.querySelector('body')
@@ -184,27 +208,7 @@
         }
 
         catch (err) {
-            // poster_container.innerHTML = null;
-
-            // console.log('avinash');
-
-            // let massage = document.createElement('h1');
-
-            // massage.textContent = "Movie not found";
-
-            // poster_container.style.display = "block"
-
-            // poster_container.style.textAlign ="center"
-
-
-            // poster_container.append(massage)
-
-            // function movie(){
-            //     window.location.href = "movie.html" 
-            // }
-            // movie();
-
-            // console.log(err);
+            return err
 
         }
 
@@ -236,15 +240,15 @@
     }
 
 
-    async  function Go_toMoviePage(text) {
+    async function Go_toMoviePage(text) {
         let movie_details = text;
-      
+
         let res = await fetch(`https://www.omdbapi.com/?apikey=e0ceb34d&i=${movie_details}`);
 
         let data = await res.json();
 
-        if( localStorage.getItem("movie_details") == null){
-            localStorage.setItem("movie_details",JSON.stringify([]))
+        if (localStorage.getItem("movie_details") == null) {
+            localStorage.setItem("movie_details", JSON.stringify([]))
         }
 
 
@@ -255,7 +259,7 @@
         localStorage.setItem("movie_details", JSON.stringify(view_movie_arr))
 
         window.location.href = "movie.html"
-       
+
 
     }
 
@@ -264,21 +268,33 @@
 
     async function main() {
 
-        let search = search_box.value;
+        try {
+            let search = search_box.value;
 
-        if (search.length < 4) {
-            return false
+            if (search.length < 4) {
+                return false
+            }
+
+            movies_list_container.style.display = "block";
+
+            movies_list_container.innerHTML = null;
+
+            let res = await movieSearch(search);
+
+            let movies_list = res.Search;
+
+            ShowMovie_list(movies_list)
         }
 
-        movies_list_container.style.display = "block";
+        catch(err){
 
-        movies_list_container.innerHTML = null;
+            let img = document.createElement("img");
 
-        let res = await movieSearch(search);
+            img.src = "https://s.yimg.com/aah/yhst-136355026053229/funny-sign-i-googled-myself-and-found-nothing-18.png";
 
-        let movies_list = res.Search;
+            slider_container.append(img)
 
-        ShowMovie_list(movies_list)
+        }
 
     }
 
