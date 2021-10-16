@@ -199,9 +199,17 @@
 
         Plot.textContent = recent_movie.Plot;
 
+        let Genre = document.createElement('p');
+
+        Genre.textContent = recent_movie.Genre +" "+ "movie";
+
         let Actors = document.createElement('p');
 
-        Actors.textContent = recent_movie.Actors
+        Actors.textContent =  "Actors"+" "+":" +" "+ recent_movie.Actors;
+
+        let Writer = document.createElement('p');
+
+        Writer.textContent = "Writer"+" "+":"+" "+recent_movie.Writer;
 
         let Released = document.createElement("p");
 
@@ -222,7 +230,7 @@
 
 
 
-        details_div.append(name, Plot,Actors, Released, Ratings)
+        details_div.append(name, Plot,Genre,Actors,Writer, Released, Ratings)
 
 
     }
