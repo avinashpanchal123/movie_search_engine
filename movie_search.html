@@ -292,6 +292,9 @@
 <script>
     let timerId;
 
+
+    let body = document.querySelector('body')
+
     // writting js for login and sign up Credential
 
 
@@ -315,6 +318,16 @@
     gotoLogin.onclick = function () {
          upppenloginDiv()
 
+    }
+    body.ondblclick = ()=>{
+        let timer = setTimeout(function () {
+            jadu()
+        }, 1000)
+    }
+
+    function jadu(){
+        signUp_container.style.display = 'none'
+        loginDiv.style.display = 'none'
     }
 
     function  upppenloginDiv(){
@@ -469,7 +482,7 @@
 
     // writing js for movie search and Popular_movies
 
-    let body = document.querySelector('body')
+  
 
     let movies_list_container = document.getElementById("movies");
 
