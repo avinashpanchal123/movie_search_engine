@@ -64,10 +64,18 @@
             letter-spacing: 1px;
         }
 
+        #signUp_btn {
+            background-color: #0e0d0d;
+            color: white;
+            outline: none;
+            letter-spacing: 1px;
+            margin-left: 10%;
+            width: 180%;
+        }
+
         .right_nav {
             display: flex;
-            width: 10%;
-            justify-content: space-between;
+            width: 15%;
             position: absolute;
             right: 2%;
             top: 30%;
@@ -125,11 +133,11 @@
 
         }
 
-        .white_text{
+        .white_text {
             color: white;
         }
 
-        h1{
+        h1 {
             margin: 3vh 0px;
         }
 
@@ -147,6 +155,58 @@
         #Popular_movies div>img {
             width: 100%;
             border-radius: 10px;
+        }
+
+
+
+        /* login and signup styling started  */
+
+        #loginDiv,
+        #signUp_container {
+            position: absolute;
+            max-width: 400px;
+            background-color: white;
+            left: 35%;
+            top: 15vh;
+            display: none;
+            z-index: 7;
+
+        }
+
+        #loginDiv {
+            display: none;
+        }
+
+        #loginDiv input,
+        #signUp_container input {
+            width: 90%;
+            margin: 2vh 5%;
+            letter-spacing: 1px;
+            padding: 1vh 0%;
+            border: 2px solid pink;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
+
+        }
+
+        #loginSubmit,
+        #submit {
+            background-color: rgb(248, 134, 153);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+
+        }
+
+        p {
+            display: inline;
+        }
+
+        #gotoLogin {
+            color: blue;
+            cursor: pointer;
         }
     </style>
 
@@ -168,10 +228,42 @@
 
         <ul class="right_nav">
             <li><a id="home" href="home.html">Home</a></li>
-            <li><a href="login.html">Login</a></li>
-           
+            <!-- <li><a href="signUp.html">Sign Up</a></li> -->
+            <li><button id="signUp_btn">Sign Up</button></li>
+
         </ul>
     </nav>
+
+
+    <div id="signUp_container">
+        <form onsubmit="signUp(event)" id="signup_form">
+            <input id="name" type="text" placeholder="name" />
+            <input id="email" type="email" placeholder="email" />
+            <input id="password" type="password" placeholder="password" />
+            <input id="username" type="text" placeholder="username" />
+            <input id="mobile" type="number" placeholder="mobile" />
+            <input id="description" type="text" placeholder="description" />
+            <input id="submit" type="submit" />
+            <p>already have an account?</p>
+            <p id="gotoLogin">Click me to login</p>
+        </form>
+
+    </div>
+
+
+    <div id="loginDiv">
+        <form onsubmit="Login(event)" id="Login_form">
+
+
+            <input id="Username" type="text" placeholder="username" />
+            <input id="Password" type="password" placeholder="password" />
+
+            <input id="loginSubmit" type="submit" />
+        </form>
+
+    </div>
+
+
 
 
 
@@ -183,7 +275,7 @@
             alt="">
     </div>
 
-      <h1 class="white_text">Popular & Trending</h1>
+    <h1 class="white_text">Popular & Trending</h1>
 
     <div id="Popular_movies">
 
@@ -200,15 +292,191 @@
 <script>
     let timerId;
 
-    let search_box = document.getElementById("nav_search");
+    // writting js for login and sign up Credential
 
-    let slider_container = document.getElementById("slider_container");
 
+
+    let signUp_container = document.getElementById("signUp_container")
+
+
+    let gotoLogin = document.getElementById('gotoLogin');
+
+    let loginDiv = document.getElementById("loginDiv")
+
+
+
+
+    let signUp_btn = document.getElementById("signUp_btn");
+
+    signUp_btn.onclick = function () {
+        signUp_container.style.display = 'block'
+    }
+
+    gotoLogin.onclick = function () {
+         upppenloginDiv()
+
+    }
+
+    function  upppenloginDiv(){
+        signUp_container.style.display = 'none'
+        loginDiv.style.display = 'block'
+    }
+
+
+
+    // writing js for fetching and posting signUp details
+
+
+
+    function signUp(e) {
+        e.preventDefault();
+
+        let form = document.getElementById('signup_form');
+
+
+        let user_data = {
+            name: form.name.value,
+            email: form.email.value,
+            username: form.username.value,
+            password: form.password.value,
+            mobile: form.mobile.value,
+            description: form.description.value
+
+        }
+
+
+        user_data = JSON.stringify(user_data);
+
+
+
+        fetch("https://masai-api-mocker.herokuapp.com/auth/register", {
+
+            method: "POST",
+
+            body: user_data,
+
+            headers: {
+                "Content-Type": "application/json",
+            }
+        })
+
+            .then((res) => {
+                return res.json()
+            })
+            .then((res) => {
+                let { error, message } = res;
+                console.log(res);
+                alert(`${message}`)
+
+                console.log(error);
+
+                if (error == false) {
+                    Gayab()
+                }
+                else if (error === true) {
+                    alert(`${message}`)
+                }
+            })
+
+            .catch((e) => {
+                console.log(e);
+            })
+
+
+
+        // console.log(user_data);
+    }
+
+  
+
+
+    // writing js for fetching login details and getting the posted details
+
+
+    function Login(e) {
+        e.preventDefault();
+
+        let form = document.getElementById('Login_form');
+
+        let user_data = {
+            username: form.Username.value,
+            password: form.Password.value
+        }
+
+        let data_to_send = JSON.stringify(user_data);
+
+
+        console.log(data_to_send);
+
+        fetch("https://masai-api-mocker.herokuapp.com/auth/login", {
+
+            method: "POST",
+
+            body: data_to_send,
+
+            headers: {
+                "Content-Type": "application/json",
+            }
+        })
+
+        .then((res)=>{
+            return res.json()
+        })
+        .then((res)=>{
+            fetchMyData(user_data.username,res.token )
+
+            if( res.error == false){
+                alert('Login Succesful')
+            }
+            console.log(res);
+            let message = res.message;
+            // alert(`${message}`)
+        })
+
+        .catch((e) =>{
+          
+            console.log(e);
+        })
+
+
+    }
+
+    function fetchMyData(username,token ){
+        fetch(`https://masai-api-mocker.herokuapp.com/user/${username}`,{
+
+            headers: {
+                "Content-Type": "application/json",
+
+                "Authorization": `Bearer ${token}`
+            }
+        })
+        .then((res)=>{
+             return res.json()
+        })
+        .then((res) =>{
+            console.log(res);
+        uppendUserName(res)
+        })
+    }
+
+
+    function uppendUserName(res){
+        let userName = res.name
+        signUp_btn.textContent = `${userName}`
+        loginDiv.style.display = 'none'
+    }
+
+
+    // writing js for movie search and Popular_movies
 
     let body = document.querySelector('body')
 
     let movies_list_container = document.getElementById("movies");
 
+
+    let search_box = document.getElementById("nav_search");
+
+    let slider_container = document.getElementById("slider_container");
 
     body.onclick = function () {
 
@@ -219,7 +487,6 @@
 
     function Gayab() {
         movies_list_container.style.display = "none";
-
         search_box.value = ""
     }
 
@@ -347,53 +614,53 @@
 
 
 
-// popular movies uppending
+    // popular movies uppending
 
 
 
-let Popular_movies = document.getElementById("Popular_movies");
+    let Popular_movies = document.getElementById("Popular_movies");
 
 
 
-async function PopularMovies(){
+    async function PopularMovies() {
 
-    let res = await fetch("https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=d8d01a05f86a4da428034a687a0beea4")
+        let res = await fetch("https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=d8d01a05f86a4da428034a687a0beea4")
 
-    let data = await res.json();
-
-
-    uppendMovies(data.results)
+        let data = await res.json();
 
 
-}
-
-PopularMovies()
+        uppendMovies(data.results)
 
 
-function uppendMovies(movies_list){
+    }
 
-    movies_list.forEach((movie) => {
-
-        let {title,poster_path,overview,release_date} = movie;
-
-        let img_div = document.createElement("div");
+    PopularMovies()
 
 
+    function uppendMovies(movies_list) {
 
-        let img = document.createElement("img");
+        movies_list.forEach((movie) => {
 
-      
+            let { title, poster_path, overview, release_date } = movie;
 
-        img.src = "https://image.tmdb.org/t/p/w500"+ poster_path;
-
-        img_div.append(img)
-
-        Popular_movies.append(img_div)
-        
-    });
+            let img_div = document.createElement("div");
 
 
-}
+
+            let img = document.createElement("img");
+
+
+
+            img.src = "https://image.tmdb.org/t/p/w500" + poster_path;
+
+            img_div.append(img)
+
+            Popular_movies.append(img_div)
+
+        });
+
+
+    }
 
 
 

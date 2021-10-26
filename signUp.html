@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        body {
+            position: relative;
+            background-color: #0e0d0d;
+        }
+
+        /* navbar started */
+
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        nav {
+            width: 100%;
+            height: 10vh;
+            background-color: #0e0d0d;
+            display: flex;
+            position: relative;
+        }
+
+        .left_nav {
+            position: absolute;
+            left: 5%;
+            top: 10%;
+        }
+
+        /* #nav_search {
+            position: absolute;
+            left: 40%;
+            top: 20%; 
+            width: 30%;
+            height: 80%;
+            font-size: 25px;
+            border: none;
+            border-bottom: 2px solid white;
+            background-color: #0e0d0d;
+            color: white;
+            outline: none;
+            letter-spacing: 1px;
+
+        } */
+
+        /* #Subscribe_btn {
+            position: absolute;
+            left: 70%;
+            top: 8%;
+            padding: 0.4% 1.5%;
+            font-size: 22px;
+            cursor: pointer;
+            border-bottom: 2px solid white; 
+            background-color: #0e0d0d;
+            color: white;
+            outline: none;
+            letter-spacing: 1px;
+        } */
+
+        .right_nav {
+            display: flex;
+            width: 10%;
+            justify-content: space-between;
+            position: absolute;
+            right: 2%;
+            top: 30%;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        li>a {
+            text-decoration: none;
+            color: white;
+        }
+
+        /* sign up container started */
+
+        #loginDiv,
+        #signUp_container {
+            max-width: 400px;
+            background-color: white;
+            margin: 3vh auto;
+
+
+        }
+
+        #loginDiv {
+            display: none;
+        }
+
+        #loginDiv input,
+        #signUp_container input {
+            width: 90%;
+            margin: 2vh 5%;
+            letter-spacing: 1px;
+            padding: 1vh 0%;
+            border: 2px solid pink;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
+
+        }
+
+        #loginSubmit,
+        #submit {
+            background-color: rgb(248, 134, 153);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+
+        }
+
+        p {
+            display: inline;
+        }
+        #gotoLogin{
+            color: blue;
+            cursor: pointer;
+        }
+
+        
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="left_nav">
+            <img src="https://secure-media.hotstarext.com/web-assets/prod/images/brand-logos/disney-hotstar-logo-dark.svg"
+                alt="">
+        </div>
+        <!-- <div>
+            <input oninput=" debounce(main,1000)" id="nav_search" type="search" placeholder="Search">
+        </div>
+        <div>
+            <button id="Subscribe_btn">Subscribe</button>
+        </div> -->
+
+        <ul class="right_nav">
+            <li><a id="home" href="home.html">Home</a></li>
+            <li><a href="login.html">Login</a></li>
+
+        </ul>
+    </nav>
+
+
+
+
+    <div id="signUp_container">
+        <form onsubmit="signUp(event)" id="signup_form">
+            <input id="name" type="text" placeholder="name" />
+            <input id="email" type="email" placeholder="email" />
+            <input id="password" type="password" placeholder="password" />
+            <input id="username" type="text" placeholder="username" />
+            <input id="mobile" type="number" placeholder="mobile" />
+            <input id="description" type="text" placeholder="description" />
+            <input id="submit" type="submit" />
+            <p>already have an account?</p><p id="gotoLogin">Click me to login</p>
+        </form>
+
+    </div>
+
+
+    <div id="loginDiv">
+        <form onsubmit="Login(event)" id="Login_form">
+
+
+            <input id="Username" type="text" placeholder="username" />
+            <input id="Password" type="password" placeholder="password" />
+
+            <input id="loginSubmit" type="submit" />
+        </form>
+
+    </div>
+
+
+
+
+
+</body>
+
+</html>
+
+<script>
+
+    let signUp_container = document.getElementById("signUp_container")
+
+
+    let gotoLogin = document.getElementById('gotoLogin');
+
+    let loginDiv = document.getElementById("loginDiv")
+
+   gotoLogin.onclick = function(){
+      
+            Gayab()
+   
+   }
+
+   function Gayab(){
+      signUp_container.style.display = 'none'
+      loginDiv.style.display = 'block'
+   }
+    
+    //fetch("https://masai-api-mocker.herokuapp.com/auth/register");
+
+
+
+
+
+
+    function signUp(e) {
+        e.preventDefault();
+
+        let form = document.getElementById('signup_form');
+
+
+        let user_data = {
+            name: form.name.value,
+            email: form.email.value,
+            username: form.username.value,
+            password: form.password.value,
+            mobile: form.mobile.value,
+            description: form.description.value
+
+        }
+
+
+        user_data = JSON.stringify(user_data);
+
+
+
+        fetch("https://masai-api-mocker.herokuapp.com/auth/register", {
+
+            method: "POST",
+
+            body: user_data,
+
+            headers: {
+                "Content-Type": "application/json",
+            }
+        })
+
+            .then((res) => {
+                return res.json()
+            })
+            .then((res) => {
+                let { error, message } = res;
+                console.log(res);
+
+                console.log(error);
+
+                if (error == false) {
+                    Gayab()
+                }
+                else if (error === true) {
+                    alert(`${message}`)
+                }
+            })
+
+            .catch((e) => {
+                console.log(e);
+            })
+
+
+
+        // console.log(user_data);
+    }
+
+  
+    function Login(e) {
+        e.preventDefault();
+
+        let form = document.getElementById('Login_form');
+
+        let user_data = {
+            username: form.Username.value,
+            password: form.Password.value
+        }
+
+        let data_to_send = JSON.stringify(user_data);
+
+
+        console.log(data_to_send);
+
+        fetch("https://masai-api-mocker.herokuapp.com/auth/login", {
+
+            method: "POST",
+
+            body: data_to_send,
+
+            headers: {
+                "Content-Type": "application/json",
+            }
+        })
+
+        .then((res)=>{
+            return res.json()
+        })
+        .then((res)=>{
+            fetchMyData(user_data.username,res.token )
+
+            if( res.error == false){
+                alert('Login Succesful')
+            }
+            console.log(res);
+        })
+
+        .catch((e) =>{
+            console.log(e);
+        })
+
+
+    }
+
+
+    function fetchMyData(username,token ){
+        fetch(`https://masai-api-mocker.herokuapp.com/user/${username}`,{
+
+            headers: {
+                "Content-Type": "application/json",
+
+                "Authorization": `Bearer ${token}`
+            }
+        })
+        .then((res)=>{
+             return res.json()
+        })
+        .then((res) =>{
+            console.log(res);
+        })
+    }
+
+
+</script>
